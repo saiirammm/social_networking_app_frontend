@@ -35,7 +35,7 @@ export default function Register(props){
         try{
             setL(true)
             const response = await axios.post('api/user/register', values)
-            setMessage(response.data)
+            setMessage(response.data.msg)
             setOpen(true)
             setTimeout(()=>{
                 handleLogIn()
@@ -43,7 +43,6 @@ export default function Register(props){
         }
         catch(e){
             console.log(e.response.data.errors)
-            setServerError(e.response.data.errors)
             setL(false)
         }
     }
