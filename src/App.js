@@ -1,10 +1,34 @@
+import React from "react";
+import NavBar from "./components/Navbar";
+import RightBar from "./components/Rightbar";
+import SideBar from "./components/Sidebar"
+import {Box, Stack} from '@mui/material'
+import RouteList from "./components/RouteList";
+import { getComFunc } from "./actions/communityAction";
+import { getCatFun } from "./actions/categoryAction";
+import { loginFunc } from "./actions/userActions";
+import { useEffect } from "react";
+import { useDispatch, useSelector} from "react-redux";
 
-function App() {
+export default function App() {
+  const dispatch = useDispatch()
+  useEffect(()=>{
+    dispatch(getComFunc())
+    dispatch(getCatFun())
+    if(localStorage.getItem('token')){
+      dispatch(loginFunc())
+    }
+  },[])
   return (
-    <di>
-      <h1>SNAPP</h1>
-    </di>
+    <Box sx={{margin: 0}}>
+      <NavBar/>
+      <Stack direction='row' spacing={2}>
+        <SideBar />
+        <RouteList/>
+        <RightBar/>
+      </Stack>
+    </Box>
+   
   );
 }
 
-export default App;

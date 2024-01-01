@@ -1,8 +1,20 @@
 import axios from 'axios'
 
-export default axios.create({
-    baseURL: 'https://localhost:4000',
-    headers:{
-        'Authorization': localStorage.getItem('token')
+const instance = axios.create({
+    baseURL: 'http://localhost:4000/',
+  });
+  
+instance.interceptors.request.use(
+(config) => {
+    const token = localStorage.getItem('token');
+    if (token) {
+    config.headers['Authorization'] = token;
     }
-})
+    return config;
+},
+(error) => {
+    return Promise.reject(error);
+}
+);
+
+export default instance;

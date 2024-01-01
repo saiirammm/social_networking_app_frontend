@@ -1,9 +1,17 @@
 import {createStore, combineReducers, applyMiddleware} from 'redux'
 import thunk from 'redux-thunk'
-import configStore from '../reducers/userReducer'
+import userReducer from '../reducers/userReducer'
+import communityReducer from '../reducers/communityReducer'
+import postReducer from '../reducers/postReducer'
+import categoryReducer from '../reducers/categoryReducer'
+import authReducer from '../reducers/authReducer'
 
 const rootReducer = {
-    users: userReducer
+    users: userReducer,
+    communities: communityReducer,
+    posts: postReducer,
+    categories: categoryReducer,
+    auth: authReducer
 }
 const configStore = () => {
     const store = createStore(combineReducers(rootReducer),
