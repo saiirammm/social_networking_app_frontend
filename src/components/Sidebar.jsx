@@ -1,6 +1,7 @@
 import { Box, List, ListItem, ListItemIcon, ListItemText, ListItemButton, Collapse } from "@mui/material";
 import React, {useState} from "react";
 import HomeIcon from '@mui/icons-material/Home';
+import PostAddIcon from '@mui/icons-material/PostAdd';
 import CategoryIcon from '@mui/icons-material/Category';
 import GroupIcon from '@mui/icons-material/Group';
 import ExpandLess from '@mui/icons-material/ExpandLess';
@@ -66,19 +67,28 @@ export default function SideBar(props){
                     </List>
                 </Collapse>
                 { community ? 
-                <ListItemButton >
+                <List>
+                    <ListItemButton onClick={()=>{navigate('/show/community', {state:{id: community._id}})}}>
                     <ListItemIcon>
                         <GroupIcon />
                     </ListItemIcon>
-                    <ListItemText primary='show Community' />
+                    <ListItemText primary='My Community' />
                 </ListItemButton>
+                <ListItemButton onClick={()=>{navigate('/create/post')}}>
+                    <ListItemIcon>
+                        <PostAddIcon />
+                    </ListItemIcon>
+                    <ListItemText primary='Create Post' />
+                </ListItemButton>
+                </List>
                 :
                 <ListItemButton onClick={handleCreateCom}>
                     <ListItemIcon>
                         <GroupIcon />
                     </ListItemIcon>
                     <ListItemText primary='Create Community' />
-                </ListItemButton> }  
+                </ListItemButton> }
+                
             </List>
         </Box>
         </Box>

@@ -42,6 +42,7 @@ export default function Login(props){
             },1500)
             setOpen(true)
             setSubmitting(false)
+            setL(false)
         }
         catch(e){
             setServerError(e.response.data.errors)

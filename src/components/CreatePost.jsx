@@ -2,14 +2,26 @@ import { Box, Card, CardMedia, Stack, Typography, IconButton } from '@mui/materi
 import React, { useCallback, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
 import DeleteIcon from '@mui/icons-material/Delete';
+import { addPostDispatch } from '../actions/postActions';
 import { Alert, Button, Checkbox, CircularProgress, FormControl, FormControlLabel, InputLabel, MenuItem, Paper, Select, Snackbar,TextField, TextareaAutosize} from '@mui/material'
 import {Formik, Form, Field, ErrorMessage} from 'formik'
 import * as Yup from 'yup' 
 import axios from '../config/axios';
+import { useNavigate } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 
 
 export default function CreatePost() {
   const [l, setL] = useState(false)
+  const [open, setOpen] = useState(false)
+  const [message, setMessage] = useState('')
+  const user = useSelector((state)=>{
+    return state.users.data
+})
+  const community = useSelector((state)=>{
+    return state.communities.data.find(com => com.createdBy == user._id)
+})
+  const navigate = useNavigate()
     const [files, setFiles] = useState([]);
     const onDrop = useCallback((acceptedFiles, rejectedFiles) => {
       if (acceptedFiles?.length) {
@@ -36,20 +48,29 @@ export default function CreatePost() {
     const initialValues = {
       title: '',
       body: '',
-      communityId: ''
+      community: ''
       
   }
   const handleSubmit = async(values, {resetForm, setSubmitting}) => {
       const formData = new FormData()
       formData.append('title', values.title)
       formData.append('body', values.body)
+      formData.append('community', community._id)
       files.forEach((file, index) => formData.append(`content`, file))
-      console.log(formData)
+      setL(true)
       try{
         const response = await axios.post('api/post/create', formData)
-        console.log(response)
+        setTimeout(()=>{
+          addPostDispatch(response.data)
+          setOpen(true)
+          resetForm()
+          setFiles([])
+          navigate('/')
+        })
+        setOpen(true)
+        setSubmitting(false)
       }catch(e){
-        console.log(e)
+        setMessage(e.code)
       }
   }
     const validationSchema = Yup.object().shape({
@@ -112,13 +133,18 @@ export default function CreatePost() {
                           helperText={<ErrorMessage name='body'/>}
                           required
                           />
-                          <Button type='submit' color='primary' variant='contained' style={{marginBottom: '5px'}}>{l ? <CircularProgress size='25px' color='inherit'/> : 'Create post'}</Button>
-                          
+                          <Button type='submit' color='primary' variant='contained' style={{marginBottom: '0px'}}>{l ? <CircularProgress size='25px' color='inherit'/> : 'Create post'}</Button>
+                          <Button onClick={()=>{navigate('/')}} color='error' variant='contained'>cancel</Button>
                       </Stack>
                   </Form>
               )}
             </Formik>
       </Box>
+      <Snackbar open={open} autoHideDuration={6000} >
+      <Alert severity="success" sx={{ width: '100%' }}>
+        post created successfully
+      </Alert>
+      </Snackbar>
     </Box>
   );
 }

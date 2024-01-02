@@ -11,7 +11,8 @@ export const getComFunc = () => {
             console.log(response.data)
             dispatch(getCom({data: response.data}))
         }catch(e){
-            alert(e.message)
+            console.log(e)
+            alert(e.code)
         }
     }
 }

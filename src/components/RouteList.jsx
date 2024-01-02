@@ -12,7 +12,7 @@ export default function RouteList(props){
             <Route path='/' element={<Feed/>} />
             <Route path='/category/communities' element={<ShowCommunities/>} />
             <Route path="/create/community" element={<CreateCommunity/>} />
-            <Route path='create/post' element={<CreatePost />} />
+            <Route path='/create/post' element={<CreatePost />} />
             <Route path='/show/community' element={<ShowCommunity/>} />
         </Routes>
     )
