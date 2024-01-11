@@ -79,8 +79,8 @@ export default function CreatePost() {
     });
 
   return (
-    <Box flex={4} p={2}>
-      <Box sx={{width:'100%', padding: '20px 40px', margin:'0 auto', height:'auto'}} elevation={5}>
+    <Box sx={{flex:{xs: 40, md: 4}}} p={2}>
+      <Box sx={{width:'auto', padding: '20px 40px', margin:'0 auto', height:'auto'}} elevation={5}>
           <Typography variant='h6' textAlign='center' paddingBottom="10px">Create Post</Typography>
             <Formik initialValues={initialValues} onSubmit={handleSubmit} validationSchema={validationSchema}>
               {(props)=>(
@@ -116,7 +116,12 @@ export default function CreatePost() {
                             <Stack sx={{direction: {xs: 'column', md: 'row'}}} justifyContent='center' gap={2}>
                               {files.map((file, i) => (
                                 <Card key={i} sx={{ margin: '10px', textAlign: 'center' }}>
-                                  <CardMedia component="img" width="100%" height="100px" image={file.preview} onLoad={()=> URL.revokeObjectURL(file.preview)} alt="Card image" />
+                                  {file.type == 'image' ? 
+                                  <CardMedia component="img" width="100%" height="100px" image={file.preview} onLoad={()=> URL.revokeObjectURL(file.preview)} alt="Card image" /> : 
+                                  <CardMedia component="video" width="100%" height="100px"  onLoad={()=> URL.revokeObjectURL(file.preview)} alt="Card video" controls>
+                                    <source src={file.preview} type="video/mp4" />
+                                </CardMedia>
+                                  }
                                   <IconButton onClick={event => {event.stopPropagation()
                                       removeFile(i)}} aria-label="remove">
                                     <DeleteIcon />

@@ -10,6 +10,7 @@ import {getPostsFunc} from './actions/postActions'
 import { loginFunc } from "./actions/userActions";
 import { useEffect } from "react";
 import { useDispatch, useSelector} from "react-redux";
+import Test from "./components/test";
 
 export default function App() {
   const dispatch = useDispatch()
@@ -24,8 +25,9 @@ export default function App() {
   return (
     <Box sx={{margin: 0}}>
       <NavBar/>
-      <Stack direction='row' spacing={2}>
-        <SideBar />
+      <Stack direction='row' spacing={2} >
+        <SideBar/>
+        <Test/>
         <RouteList/>
         <RightBar/>
       </Stack>

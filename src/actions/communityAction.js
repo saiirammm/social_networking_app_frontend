@@ -4,6 +4,18 @@ const getCom = (data) => {
     return {type: 'GET_COM', payload: data}
 }
 
+export const joinLeft = (data) => {
+    return {type: 'JOIN_LEFT_COM', payload: data}
+}
+
+export const createCom = (data) => {
+    return {type: 'CREATE_COM', payload: data}
+}
+
+export const comEditDispatch = (data) => {
+    return {type: 'EDIT_COM', payload: data}
+}
+
 export const getComFunc = () => {
     return async(dispatch)=>{
         try{

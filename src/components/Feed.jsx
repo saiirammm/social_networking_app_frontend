@@ -8,7 +8,7 @@ export default function Feed(props){
     })
     console.log(posts)
     return (
-        <Box flex={4} p={2} >
+        <Box sx={{flex:{xs: 40, md: 4}}} p={2} >
             <ShowPosts posts={posts} />
         </Box>
     )

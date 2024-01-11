@@ -7,7 +7,7 @@ import { useNavigate } from 'react-router-dom'
 import { useDispatch } from 'react-redux'
 import { loginFunc } from '../actions/userActions'
 export default function Login(props){
-    const {handleModalClose} = props
+    const {handleModalClose, handleOpenRegisterModal} = props
     const dispatch = useDispatch()
     const [l, setL] = useState(false)
     const [message, setMessage] = useState('')
@@ -50,6 +50,11 @@ export default function Login(props){
             setSubmitting(false)
         }
     }
+    const regiModelOpen = () => {
+        handleOpenRegisterModal()
+        handleModalClose()
+
+    }
     return (
         <Box >
             <Paper sx={{width:'400px', padding: '20px 40px', margin:'0 auto', height:'360px'}} elevation={5}>
@@ -81,8 +86,7 @@ export default function Login(props){
                         )}
                     </Formik>
                 <Box display='flex' justifyContent='space-between'>
-                    <Typography paddingTop='20px'>forgot password </Typography>
-                    <Typography paddingTop='20px'>Don't have an account? register </Typography>
+                    <Typography paddingTop='20px'>Don't have an account?<Button onClick={regiModelOpen}>Register</Button> </Typography>
                 </Box>
                 <Snackbar open={open} autoHideDuration={6000} >
                 <Alert severity="success" sx={{ width: '100%' }}>

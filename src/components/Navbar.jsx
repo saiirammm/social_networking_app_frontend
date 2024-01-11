@@ -1,5 +1,5 @@
 import { AppBar, Avatar, styled, Toolbar, Typography, InputBase, Menu, MenuItem, Button, Box, Modal, Stack, TextField, Paper} from "@mui/material";
-import Diversity3Icon from '@mui/icons-material/Diversity3';
+import StayCurrentPortraitIcon from '@mui/icons-material/StayCurrentPortrait';
 import React, {useState, useEffect} from "react";
 import Autocomplete from '@mui/material/Autocomplete';
 import Register from "./Register";
@@ -35,6 +35,7 @@ export default function NavBar(props){
     const [open, setOpen] = useState(false)
     const [openRegisterModal, setOpenRegisterModal] = useState(false)
     const [openLoginModal, setOpenLoginModal] = useState(false)
+    const [anchorEl, setAnchorEl] = useState(null);
     const navigate = useNavigate()
     const dispatch = useDispatch()
     const user = useSelector((state)=>{
@@ -54,7 +55,6 @@ export default function NavBar(props){
         setOpenRegisterModal(false)
     }
     const handleOpenLoginModal = () => {
-        setOpen(true)
         setOpenLoginModal(true)
     }
     const handleLoginModalClose = ()=> {
@@ -87,8 +87,8 @@ export default function NavBar(props){
         <AppBar position="sticky">
             <StyledToolbar>
                 <Stack direction='row' >
-                <Diversity3Icon sx={{padding: '2px 3px 0px 0px', marginLeft:'0'}}/>
-                <Typography variant="h6" >
+                <StayCurrentPortraitIcon sx={{padding: '2px 3px 0px 0px', marginLeft:'0', marginRight: '0'}}/>
+                <Typography variant="h6" sx={{display:{xs: 'none', md: 'block'}}}>
                     SNAPP
                 </Typography>
                 </Stack>
@@ -112,45 +112,32 @@ export default function NavBar(props){
                 }
                 />
                 <Profile>
-                    <Avatar sx={{width:'25px', height: '25px'}} onClick={(e)=>{setOpen(true)}}/>
-                    <Typography >{user.username ? user.username : 'Guest'}</Typography>
-                    <Menu
-                        id="demo-positioned-menu"
-                        aria-labelledby="demo-positioned-button"
-                        open={open}
-                        onClose={(e)=>{setOpen(false)}}
-                        anchorOrigin={{
-                        vertical: 'top',
-                        horizontal: 'right',
-                        }}
-                        transformOrigin={{
-                        vertical: 'top',
-                        horizontal: 'right',
-                        }}
-                    >
-                        { !(localStorage.getItem('token')) ?
-                            <Box>
-                                <MenuItem onClick={handleOpenRegisterModal}>Register</MenuItem>
-                                <MenuItem onClick={handleOpenLoginModal}>Login</MenuItem>
-                            </Box>
-                            : 
-                                <MenuItem onClick={handleLogout}>Logout</MenuItem>
-                            }
-                        <Modal
-                        open={openRegisterModal}
-                        width='50'
-                        >
-                            <Register handleOpenLoginModal={handleOpenLoginModal} handleModalClose={handleRegisterModalClose}/>
-                        </Modal>
-                        <Modal
-                        open={openLoginModal}
-                        width='50'
-                        >
-                            <Login handleModalClose={handleLoginModalClose}/>
-                        </Modal>
+                    <Avatar sx={{width:'25px', height: '25px'}} onClick={(e)=>{setAnchorEl(e.currentTarget)}}/>
+                    <Typography >{user.username ? user.username : 'GUEST'}</Typography>
+                    <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={()=>{setAnchorEl(null)}}>
+                        { !(localStorage.getItem('token')) ? 
+                            <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={()=>{setAnchorEl(null)}}>
+                                <MenuItem onClick={handleOpenLoginModal}>login</MenuItem>
+                                <MenuItem onClick={handleOpenRegisterModal}>register</MenuItem>
+                            </Menu> :
+                                <MenuItem onClick={handleLogout}>logout</MenuItem>
+                        }
                     </Menu>
                 </Profile>
             </StyledToolbar>
+            <Modal
+            open={openRegisterModal}
+            width='50'
+            >
+                <Register handleOpenLoginModal={handleOpenLoginModal} handleModalClose={handleRegisterModalClose}/>
+            </Modal>
+            <Modal
+            open={openLoginModal}
+            width='50'
+            >
+                <Login handleOpenRegisterModal={handleOpenRegisterModal} handleModalClose={handleLoginModalClose}/>
+            </Modal>
+
         </AppBar>
     )
 }

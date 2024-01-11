@@ -8,7 +8,8 @@ export const loginFunc = () => {
             console.log(user, 'login dispatched')
             dispatch(loginDispatch({data: user.data}))
         }catch(e){
-            alert(e)
+            console.log(e)
+            alert(e.code)
         }
     }
 } 

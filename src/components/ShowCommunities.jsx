@@ -22,7 +22,7 @@ export default function ShowCommunities(props){
         return e.category == id
     })
     return (
-        <Box flex={4} p={2}>
+        <Box sx={{flex:{xs: 40, md: 4}}} p={2}>
             <Box display='flex' flexDirection='column' gap={2}>
             {result.length ? 
                     result.map((e, i)=>{
@@ -36,7 +36,7 @@ export default function ShowCommunities(props){
                             transition: 'elevation 0.3s ease'}}
                             onMouseOver={() => handleFocus(i)}
                             onMouseOut={handleBlur}
-                            onClick={()=>navigate('/show/community', {state:{id: e._id}})}>
+                            onClick={()=>navigate(`/show/community`, {state:{community:e._id}})}>
                                 <List disablePadding>
                                     <ListItem sx={{bgcolor: '#42a5f5'}}>
                                         <ListItemText primary={e.name} />
