@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Box, Checkbox, CircularProgress, Menu, MenuItem, MenuItemcd} from "@mui/material";
+import { Box, Checkbox, CircularProgress, Menu, MenuItem} from "@mui/material";
 import Card from '@mui/material/Card';
 import CardHeader from '@mui/material/CardHeader';
 import CardMedia from '@mui/material/CardMedia';
@@ -46,6 +46,7 @@ export default function ShowPosts(props){
     <Box sx={{flex:{xs: 40, md: 4}}} p={2} >
         {  (posts.length && communities.length) ? posts.map(post=>{
             const community = communities.find(com=> post.community == com._id )
+            console.log(community,post)
             return <Card key={post._id} sx={{margin:'0 auto', marginBottom: '20px'}}>
                         <CardHeader
                         sx={{height: 'auto', padding: '10px', bgcolor: ''}}

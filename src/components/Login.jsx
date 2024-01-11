@@ -12,7 +12,7 @@ export default function Login(props){
     const [l, setL] = useState(false)
     const [message, setMessage] = useState('')
     const [open, setOpen] = useState(false)
-    const [serverError, setServerError] = useState([])
+    const [serverError, setServerError] = useState('')
     const navigate = useNavigate()
     const initialValues = {
         email: '',
@@ -89,6 +89,11 @@ export default function Login(props){
                     <Typography paddingTop='20px'>Don't have an account?<Button onClick={regiModelOpen}>Register</Button> </Typography>
                 </Box>
                 <Snackbar open={open} autoHideDuration={6000} >
+                <Alert severity="success" sx={{ width: '100%' }}>
+                    {message}
+                </Alert>
+                </Snackbar>
+                <Snackbar open={setServerError.length} autoHideDuration={6000} >
                 <Alert severity="success" sx={{ width: '100%' }}>
                     {message}
                 </Alert>

@@ -8,17 +8,23 @@ export const loginFunc = () => {
             console.log(user, 'login dispatched')
             dispatch(loginDispatch({data: user.data}))
         }catch(e){
-            console.log(e)
-            alert(e.code)
+            if(e.code=='ERR_NETWORK'){
+                alert('no internet')
+            }else{
+                dispatch(loginDispatch({serverErrors: e.response.data}))
+            }
         }
     }
 } 
 
 export const logoutFunc = () => {
     return async(dispatch)=>{
-        console.log('logout dispatch')
-        localStorage.clear()
-        dispatch(logoutDispatch())
+        try{
+            localStorage.clear()
+            dispatch(logoutDispatch())
+        }catch(e){
+
+        }
     }
 }
 

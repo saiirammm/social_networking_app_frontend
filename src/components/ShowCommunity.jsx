@@ -3,24 +3,18 @@ import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch} from "react-redux";
 import axios from "../config/axios";
-import ShowPosts from "./ShowPosts";
+import ShowPosts from './ShowPosts';
 import { joinLeft } from "../actions/communityAction";
 export default function ShowCommunity(props){
     const location = useLocation()
     const [l, setL] = useState(false)
     const dispatch = useDispatch()
     const navigate = useNavigate()
-    const [id, setId] = useState('')
-    useEffect(()=>{
-        if(location.state.id){
-            setId(location.state.id)
-        }
-    }, [location.state])
     const posts = useSelector((state)=>{
-            return state.posts.data.filter(post=>id==post.community)
+            return state.posts.data.filter(post=>location.state.id==post.community)
     })
     const community = useSelector((state)=>{
-        return state.communities.data.find(com=> com._id == id)
+        return state.communities.data.find(com=> com._id == location.state.id)
     })
     const user = useSelector((state)=>{
         return state.users.data

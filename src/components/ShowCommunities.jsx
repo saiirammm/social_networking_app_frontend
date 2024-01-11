@@ -36,7 +36,7 @@ export default function ShowCommunities(props){
                             transition: 'elevation 0.3s ease'}}
                             onMouseOver={() => handleFocus(i)}
                             onMouseOut={handleBlur}
-                            onClick={()=>navigate(`/show/community`, {state:{community:e._id}})}>
+                            onClick={()=>navigate(`/show/community`, {state:{id:e._id}})}>
                                 <List disablePadding>
                                     <ListItem sx={{bgcolor: '#42a5f5'}}>
                                         <ListItemText primary={e.name} />

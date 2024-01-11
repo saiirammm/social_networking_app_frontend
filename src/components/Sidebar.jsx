@@ -68,7 +68,7 @@ export default function SideBar(props){
                 </Collapse>
                 { community ? 
                 <List>
-                    <ListItemButton onClick={()=>{navigate('/show/community', {state:{community: community}})}}>
+                    <ListItemButton onClick={()=>{navigate('/show/community', {state:{id: community._id}})}}>
                     <ListItemIcon>
                         <GroupIcon />
                     </ListItemIcon>

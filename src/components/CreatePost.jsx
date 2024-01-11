@@ -116,7 +116,7 @@ export default function CreatePost() {
                             <Stack sx={{direction: {xs: 'column', md: 'row'}}} justifyContent='center' gap={2}>
                               {files.map((file, i) => (
                                 <Card key={i} sx={{ margin: '10px', textAlign: 'center' }}>
-                                  {file.type == 'image' ? 
+                                  {file.type.includes('image') ? 
                                   <CardMedia component="img" width="100%" height="100px" image={file.preview} onLoad={()=> URL.revokeObjectURL(file.preview)} alt="Card image" /> : 
                                   <CardMedia component="video" width="100%" height="100px"  onLoad={()=> URL.revokeObjectURL(file.preview)} alt="Card video" controls>
                                     <source src={file.preview} type="video/mp4" />
