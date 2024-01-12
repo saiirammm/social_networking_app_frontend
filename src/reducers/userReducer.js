@@ -5,7 +5,7 @@ export default function userReducer(state = iState, action){
             return {...state, ...action.payload}
         }
         case 'LOGOUT_USER': {
-            return {data:{}, serverErrors: []}
+            return {data:{}, serverErrors: {}}
         }
         default:{
             return {...state}

@@ -31,13 +31,13 @@ export default function CreateCommunity(props){
             setL(true)
             const response = await axios.post('api/community/create', values)
             console.log(response.data)
-            dispatch(createCom(response.data))
+            dispatch({type: 'CREATE_COM', payload: response.data.community})
             setMessage(response.data.msg)
             setOpen(true)
             setTimeout(()=>{
                 resetForm()
                 setSubmitting(true)
-                navigate(`/show/community`)
+                navigate(`/show/community`, {state:{id: response.data.community._id}})
             },3000)
         }
         catch(e){
@@ -49,13 +49,13 @@ export default function CreateCommunity(props){
             setL(true)
             const response = await axios.put(`/api/community/edit/${location.state.community._id}`, values)
             console.log(response.data)
-            dispatch(comEditDispatch(response.data))
+            dispatch(comEditDispatch(response.data.community))
             setMessage(response.data.message)
             setOpen(true)
             setTimeout(()=>{
                 resetForm()
                 setSubmitting(true)
-                navigate(`/show/community`, {state: {community: response.data.community}})
+                navigate(`/show/community`, {state: {id: response.data.community._id}})
             },3000)
         }
         catch(e){

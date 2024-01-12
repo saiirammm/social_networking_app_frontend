@@ -9,7 +9,7 @@ export const loginFunc = () => {
             dispatch(loginDispatch({data: user.data}))
         }catch(e){
             if(e.code=='ERR_NETWORK'){
-                alert('no internet')
+                dispatch(loginDispatch({serverErrors: {errors: 'network error'}}))
             }else{
                 dispatch(loginDispatch({serverErrors: e.response.data}))
             }

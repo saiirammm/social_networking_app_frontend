@@ -11,9 +11,13 @@ export const getPostsFunc = () => {
     return async(dispatch) => {
         try{
             const posts = await axios.get('api/getPosts')
-            dispatch(getPostDispatch(posts.data))
+            dispatch(getPostDispatch({data: posts.data, serverErrors: {}}))
         }catch(e){
-            alert(e)
+            if(e.code=='ERR_NETWORK'){
+                dispatch(getPostDispatch({serverErrors: {errors: 'network error'}}))
+            }else{
+                dispatch(getPostDispatch({serverErrors: e.response.data}))
+            }
         }
     }
 }

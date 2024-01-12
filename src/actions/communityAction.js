@@ -8,9 +8,6 @@ export const joinLeft = (data) => {
     return {type: 'JOIN_LEFT_COM', payload: data}
 }
 
-export const createCom = (data) => {
-    return {type: 'CREATE_COM', payload: data}
-}
 
 export const comEditDispatch = (data) => {
     return {type: 'EDIT_COM', payload: data}
@@ -21,10 +18,13 @@ export const getComFunc = () => {
         try{
             const response = await axios.get('api/getComs')
             console.log(response.data)
-            dispatch(getCom({data: response.data}))
+            dispatch(getCom({data: response.data, serverErrors: {}}))
         }catch(e){
-            console.log(e)
-            alert(e.code)
+            if(e.code=='ERR_NETWORK'){
+                dispatch(getCom({serverErrors: {errors: 'network error'}}))
+            }else{
+                dispatch(getCom({serverErrors: e.response.data}))
+            }
         }
     }
 }

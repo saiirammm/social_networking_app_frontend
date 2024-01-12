@@ -11,10 +11,10 @@ export default function ShowCommunity(props){
     const dispatch = useDispatch()
     const navigate = useNavigate()
     const posts = useSelector((state)=>{
-            return state.posts.data.filter(post=>location.state.id==post.community)
+            return state.posts.data.filter(post=>location.state?.id==post.community)
     })
     const community = useSelector((state)=>{
-        return state.communities.data.find(com=> com._id == location.state.id)
+        return state.communities.data.find(com=> com._id == location.state?.id)
     })
     const user = useSelector((state)=>{
         return state.users.data
@@ -71,7 +71,7 @@ export default function ShowCommunity(props){
                     </DialogActions>
                 </Dialog>
             </Box>
-            <ShowPosts posts={posts}/>
+            { posts.length ? <ShowPosts posts={posts}/> : 'no posts in this community'}
         </Box>
         : 
         <Box height='600px' flex={4} p={4} display="flex" flexDirection="column" alignItems="center" justifyContent="center">

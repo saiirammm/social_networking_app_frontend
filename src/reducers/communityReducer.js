@@ -6,7 +6,10 @@ export default function communityReducer(state = iState, action){
             return {...state, ...action.payload}
         }
         case 'CREATE_COM': {
-            return {...state, data: [...state.data, ...action.payload]}
+            console.log(action.payload)
+            const out = {...state, data: [...state.data, {...action.payload}]}
+            console.log(out)
+            return {...out}
         }
         case 'JOIN_LEFT_COM':{
             console.log(action.payload)
