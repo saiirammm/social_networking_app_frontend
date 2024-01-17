@@ -11,6 +11,8 @@ import { loginFunc } from "./actions/userActions";
 import { useEffect } from "react";
 import { useDispatch, useSelector} from "react-redux";
 import Test from "./components/test";
+import { getComments } from "./actions/commentActions";
+import { getLikesFunc } from "./actions/likeActions";
 
 export default function App() {
   const dispatch = useDispatch()
@@ -18,6 +20,8 @@ export default function App() {
     dispatch(getComFunc())
     dispatch(getCatFun())
     dispatch(getPostsFunc())
+    dispatch(getComments())
+    dispatch(getLikesFunc())
     if(localStorage.getItem('token')){
       dispatch(loginFunc())
     }

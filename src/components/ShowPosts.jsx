@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Box, Checkbox, CircularProgress, Menu, MenuItem} from "@mui/material";
 import Card from '@mui/material/Card';
 import CardHeader from '@mui/material/CardHeader';
@@ -11,19 +11,29 @@ import Typography from '@mui/material/Typography';
 import  {blue} from '@mui/material/colors';
 import Favorite from '@mui/icons-material/Favorite';
 import FavoriteBorder from '@mui/icons-material/FavoriteBorder'
+import CommentIcon from '@mui/icons-material/Comment';
 import ShareIcon from '@mui/icons-material/Share';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import Carousel from 'react-material-ui-carousel'
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import axios from "../config/axios";
+import { hitLike } from "../actions/likeActions";
 
 export default function ShowPosts(props){
     const {posts} = props
+    const navigate = useNavigate()
+    const dispatch = useDispatch()
     const communities = useSelector((state)=>{
         return state.communities.data
     })
     const user = useSelector((state)=>{
         return state.users.data
     })
+    const likes = useSelector((state)=>{
+        return state.likes.data
+    })
+    console.log(likes)
     const [anchorEl, setAnchorEl] = useState(null);
     
     const [cM, setCM] = useState(false)
@@ -44,9 +54,9 @@ export default function ShowPosts(props){
     };
     return (
     <Box sx={{flex:{xs: 40, md: 4}}} p={2} >
-        {  (posts.length && communities.length) ? posts.map(post=>{
+        {  ((posts.length && communities.length) && likes) ? posts.map(post=>{
             const community = communities.find(com=> post.community == com._id )
-            console.log(community,post)
+            console.log(community,post,likes)
             return <Card key={post._id} sx={{margin:'0 auto', marginBottom: '20px'}}>
                         <CardHeader
                         sx={{height: 'auto', padding: '10px', bgcolor: ''}}
@@ -123,8 +133,14 @@ export default function ShowPosts(props){
                             </Typography>
                         </CardContent>
                         <CardActions disableSpacing>
-                            <IconButton aria-label="add to favorites">
-                            <Checkbox  icon={<FavoriteBorder />} checkedIcon={<Favorite />} />
+                            <IconButton aria-label="like" onClick={()=>{dispatch(hitLike(post._id))}}>
+                            {likes.find(like=>{
+                                console.log(like,user,post)
+                                return like.targetId==post._id && like.userId==user._id}) ? <Favorite sx={{color: 'red'}}/> : <FavoriteBorder />}
+                            <Typography>{likes.filter(like=>like.targetId==post._id).length}</Typography>
+                            </IconButton>
+                            <IconButton aria-label="comment" onClick={()=>{navigate('/show/post', {state:{post: post}})}}>
+                                <CommentIcon />
                             </IconButton>
                             <IconButton aria-label="share">
                                 <ShareIcon />

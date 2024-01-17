@@ -1,4 +1,4 @@
-import { Box, Button, CircularProgress, Dialog, DialogActions, DialogTitle, LinearProgress, Stack } from "@mui/material";
+import { Box, Button, CircularProgress, Dialog, DialogActions, DialogTitle, LinearProgress, Stack, Typography } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch} from "react-redux";
@@ -50,12 +50,12 @@ export default function ShowCommunity(props){
             <Box bgcolor='skyblue' 
             padding='10px'
             borderRadius='10px'>
-                <h1>{community.name} - {community.premium ? <b>premium</b> : <b>free</b> }</h1>
+                <h1>{community.name} | {community.premium ? <b>premium</b> : <b>free</b> }</h1>
                 <h3>{community.description}</h3>
                 {
                     !(community.createdBy==user._id) ?
                      <Button onClick={community.users.find(id=>id==user._id)?handleJoin:handleConfirm} variant="contained" size="small" >
-                        {community.users.find(id=>id==user._id) ? 'Left community' : 'join community'}
+                        {community.users.find(id=>id==user._id) ? 'Leave community' : 'join community'}
                     </Button> : 
                     <Box>
                         <Button variant='contained' sx={{marginRight: '10px'}} onClick={()=>{navigate('/create/community', {state:{community: community}})}}>edit community</Button>
@@ -71,7 +71,18 @@ export default function ShowCommunity(props){
                     </DialogActions>
                 </Dialog>
             </Box>
-            { posts.length ? <ShowPosts posts={posts}/> : 'no posts in this community'}
+            { 
+                user._id==community.createdBy ? 
+                (posts.length ? <ShowPosts posts={posts}/> : 
+                <Typography marginTop='30px' textAlign='center' variant="h6">no posts yet<Button onClick={()=>{navigate('/create/post')}}>
+                    create one
+                </Button></Typography>)
+                :
+                (!community.premium ? 
+                (posts.length ? <ShowPosts posts={posts}/> : 
+                <Typography marginTop='30px' textAlign='center' variant="h6">No Posts in this Community</Typography>) :
+                <Typography marginTop='30px' textAlign='center' variant="h6">This is premium community you need to join to access the content</Typography>)
+            }
         </Box>
         : 
         <Box height='600px' flex={4} p={4} display="flex" flexDirection="column" alignItems="center" justifyContent="center">
@@ -79,3 +90,4 @@ export default function ShowCommunity(props){
         </Box>
     )
 }
+

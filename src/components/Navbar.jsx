@@ -8,6 +8,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { logoutFunc } from "../actions/userActions";
 import {addDispatch} from '../actions/authActions'
 import { useNavigate } from "react-router-dom";
+import { blue } from "@mui/material/colors";
 
 const StyledToolbar = styled(Toolbar)({
     display: 'flex',
@@ -112,7 +113,9 @@ export default function NavBar(props){
                 }
                 />
                 <Profile>
-                    <Avatar sx={{width:'25px', height: '25px'}} onClick={(e)=>{setAnchorEl(e.currentTarget)}}/>
+                    <Avatar sx={{ bgcolor: 'white' , height:'25px', width: '25px',fontSize: '15px'}} aria-label="profile" onClick={(e)=>{setAnchorEl(e.currentTarget)}}>
+                    {user.username ? <Typography color={blue[800]} >{user.username[0].toUpperCase()}</Typography> : null}
+                    </Avatar>
                     <Typography >{user.username ? user.username : 'GUEST'}</Typography>
                     <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={()=>{setAnchorEl(null)}}>
                         { !(localStorage.getItem('token')) ? 

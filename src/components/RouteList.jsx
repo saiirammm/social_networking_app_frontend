@@ -5,6 +5,7 @@ import ShowCommunities from "./ShowCommunities";
 import CreateCommunity from "./CreateCommunity";
 import CreatePost from './CreatePost'
 import ShowCommunity from "./ShowCommunity";
+import ShowPost from "./ShowPost";
 
 export default function RouteList(props){
     return (
@@ -14,6 +15,7 @@ export default function RouteList(props){
             <Route path="/create/community" element={<CreateCommunity/>} />
             <Route path='/create/post' element={<CreatePost />} />
             <Route path='/show/community' element={<ShowCommunity/>} />
+            <Route path='/show/post' element={<ShowPost/>} />
         </Routes>
     )
 } 

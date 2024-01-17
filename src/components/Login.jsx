@@ -93,7 +93,7 @@ export default function Login(props){
                     {message}
                 </Alert>
                 </Snackbar>
-                <Snackbar open={setServerError.length} autoHideDuration={6000} >
+                <Snackbar open={serverError.length} autoHideDuration={6000} >
                 <Alert severity="success" sx={{ width: '100%' }}>
                     {message}
                 </Alert>

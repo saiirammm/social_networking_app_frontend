@@ -60,6 +60,8 @@ export default function CreatePost() {
       setL(true)
       try{
         const response = await axios.post('api/post/create', formData)
+        console.log(response.data)
+        setMessage('post created successfully')
         setTimeout(()=>{
           addPostDispatch(response.data)
           setOpen(true)
@@ -70,7 +72,10 @@ export default function CreatePost() {
         setOpen(true)
         setSubmitting(false)
       }catch(e){
-        setMessage(e.code)
+        console.log(e)
+        setL(false)
+        setMessage(e.response.data.errors)
+        setOpen(true)
       }
   }
     const validationSchema = Yup.object().shape({
@@ -85,7 +90,6 @@ export default function CreatePost() {
             <Formik initialValues={initialValues} onSubmit={handleSubmit} validationSchema={validationSchema}>
               {(props)=>(
                   <Form >
-                    {console.log(props)}
                       <Stack spacing={2}>
                           <Field as={TextField}
                           label="title"
@@ -147,7 +151,7 @@ export default function CreatePost() {
       </Box>
       <Snackbar open={open} autoHideDuration={6000} >
       <Alert severity="success" sx={{ width: '100%' }}>
-        post created successfully
+        {message}
       </Alert>
       </Snackbar>
     </Box>

@@ -46,7 +46,11 @@ export default function ShowCommunities(props){
                                     </ListItem>
                                 </List>
                         </Paper>)
-                    }) : 'no communities in this category'}
+                    }) : 
+                    <Box height='500px' display="flex" flexDirection="column" alignItems="center" justifyContent="center">
+                        <Typography variant="h6">No Communities in this Category</Typography>
+                    </Box>
+                    }
             </Box>
         </Box>
     )

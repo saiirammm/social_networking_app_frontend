@@ -25,8 +25,8 @@ export default function Test(props){
     }
     return (
         <Box flex={1} p={0} sx={{display:{xs: 'block', md: 'none'}}}>
-            <Box position='fixed' margin='0'>
-            <List sx={{bgcolor: 'background.paper' ,width: '10px'}}>
+            <Box position='fixed' margin='-8px' paddingTop='20px'>
+            <List sx={{bgcolor: 'background.paper' ,width: '10px'}} >
                 <ListItemButton onClick={()=>{navigate('/')}}>
                     <ListItemIcon >
                         <HomeIcon/>
@@ -34,8 +34,8 @@ export default function Test(props){
                 </ListItemButton>
                 { community ? 
                 <List>
-                    <ListItemButton onClick={()=>{navigate('/show/community', {state:{id: community._id}})}}>
-                    <ListItemIcon>
+                <ListItemButton onClick={()=>{navigate('/show/community', {state:{id: community._id}})}}>
+                    <ListItemIcon >
                         <GroupIcon />
                     </ListItemIcon>
                 </ListItemButton>

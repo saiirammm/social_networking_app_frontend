@@ -18,7 +18,7 @@ export const getComFunc = () => {
         try{
             const response = await axios.get('api/getComs')
             console.log(response.data)
-            dispatch(getCom({data: response.data, serverErrors: {}}))
+            dispatch(getCom({data: [...response.data], serverErrors: {}}))
         }catch(e){
             if(e.code=='ERR_NETWORK'){
                 dispatch(getCom({serverErrors: {errors: 'network error'}}))
