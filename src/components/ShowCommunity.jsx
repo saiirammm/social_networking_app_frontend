@@ -1,13 +1,14 @@
-import { Box, Button, CircularProgress, Dialog, DialogActions, DialogTitle, LinearProgress, Stack, Typography } from "@mui/material";
+import { Box, Button, CircularProgress, Dialog, DialogActions, DialogTitle, Typography } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch} from "react-redux";
 import axios from "../config/axios";
 import ShowPosts from './ShowPosts';
-import { joinLeft } from "../actions/communityAction";
+import { deleteCommunityF, joinLeft } from "../actions/communityAction";
+import {getPostDispatch} from '../actions/postActions'
+
 export default function ShowCommunity(props){
     const location = useLocation()
-    const [l, setL] = useState(false)
     const dispatch = useDispatch()
     const navigate = useNavigate()
     const posts = useSelector((state)=>{
@@ -20,6 +21,24 @@ export default function ShowCommunity(props){
         return state.users.data
     })
     const [openDialog, setOpenDialog] = useState(false);
+    const [del, setDel] = useState(false)
+
+    const handleDel = async()=>{
+        setDel(true)
+    }
+
+    const handleDelConf = async()=>{
+        try{
+            const response = await axios.delete(`api/community/delete/${community._id}`)
+            dispatch(deleteCommunityF(community._id));
+            dispatch(getPostDispatch({data: [...response.data], serverErrors: {}}))
+            navigate('/')
+        }catch(e){
+            alert(e.response.data.error)
+        }finally{
+            setDel(false);
+        }
+    }
 
     const handleJoin = async () => {
         setOpenDialog(true);
@@ -27,21 +46,19 @@ export default function ShowCommunity(props){
 
     const handleConfirm = async () => {
         try {
-            setL(true);
             const response = await axios.post(`api/community/join/${community._id}`);
             const updatedCom = { ...community, users: response.data.users };
             dispatch(joinLeft(updatedCom));
-            setL(false);
             setOpenDialog(false);
         } catch (e) {
-            setL(false);
-            alert(e);
+            alert(e.response.data.error);
             setOpenDialog(false);
         }
     };
 
     const handleCancel = () => {
         setOpenDialog(false);
+        setDel(false)
     };
 
     return (
@@ -59,7 +76,7 @@ export default function ShowCommunity(props){
                     </Button> : 
                     <Box>
                         <Button variant='contained' sx={{marginRight: '10px'}} onClick={()=>{navigate('/create/community', {state:{community: community}})}}>edit community</Button>
-                        <Button variant='contained'>delete community</Button>
+                        <Button variant='contained' onClick={handleDel}>delete community</Button>
                     </Box>
 
                 }
@@ -68,6 +85,13 @@ export default function ShowCommunity(props){
                     <DialogActions>
                     <Button onClick={handleCancel}>Cancel</Button>
                     <Button onClick={handleConfirm}>Confirm</Button>
+                    </DialogActions>
+                </Dialog>
+                <Dialog open={del} onClose={handleCancel}>
+                    <DialogTitle>if you delete this community the posts you posted will be deleted as well, are you sure?</DialogTitle>
+                    <DialogActions>
+                    <Button onClick={handleCancel}>Cancel</Button>
+                    <Button onClick={handleDelConf}>Confirm</Button>
                     </DialogActions>
                 </Dialog>
             </Box>

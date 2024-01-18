@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Box, Checkbox, CircularProgress, Menu, MenuItem} from "@mui/material";
+import { Alert, Box, Checkbox, CircularProgress, Menu, MenuItem, Snackbar} from "@mui/material";
 import Card from '@mui/material/Card';
 import CardHeader from '@mui/material/CardHeader';
 import CardMedia from '@mui/material/CardMedia';
@@ -33,7 +33,24 @@ export default function ShowPosts(props){
     const likes = useSelector((state)=>{
         return state.likes.data
     })
-    console.log(likes)
+    const comments = useSelector((state)=>{
+        return state.comments.data
+    })
+    const [open, setOpen] = useState(false)
+    useEffect(()=>{
+        setTimeout(()=>{
+            setOpen(false)
+        },[6000])
+    },[open])
+
+    const copyToClipboard = async (url) => {
+        try {
+          await navigator.clipboard.writeText(url);
+          setOpen(true)
+        } catch (error) {
+          console.error('Unable to copy to clipboard', error);
+        }
+      };
     const [anchorEl, setAnchorEl] = useState(null);
     
     const [cM, setCM] = useState(false)
@@ -141,11 +158,17 @@ export default function ShowPosts(props){
                             </IconButton>
                             <IconButton aria-label="comment" onClick={()=>{navigate('/show/post', {state:{post: post}})}}>
                                 <CommentIcon />
+                                <Typography>{comments?.filter(c=>c.post==post._id).length}</Typography>
                             </IconButton>
-                            <IconButton aria-label="share">
+                            <IconButton aria-label="share" onClick={()=>{copyToClipboard(post.content)}}>
                                 <ShareIcon />
                             </IconButton>
                         </CardActions>
+                        <Snackbar open={open} autoHideDuration={6000} >
+                        <Alert severity="success" sx={{ width: '100%' }}>
+                            Link Copied to Clipboard
+                        </Alert>
+                        </Snackbar>
                     </Card>
                 }) : 
                 <Box height='600px' flex={4} p={4} display="flex" flexDirection="column" alignItems="center" justifyContent="center">

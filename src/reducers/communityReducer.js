@@ -22,7 +22,6 @@ export default function communityReducer(state = iState, action){
             })}
         }
         case 'EDIT_COM': {
-            console.log(action.payload)
             return {...state, data: state.data.map(com=>{
                 if(com._id == action.payload._id){
                     return {...action.payload}
@@ -30,6 +29,9 @@ export default function communityReducer(state = iState, action){
                     return {...com}
                 }
             })}
+        }
+        case 'DEL_COM': {
+            return {...state, data: state.data.filter(com=>com._id!==action.payload)}
         }
         default:{
             return {...state}

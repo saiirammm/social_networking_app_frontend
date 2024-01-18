@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { Box, Checkbox, CircularProgress, Menu, MenuItem} from "@mui/material";
+import React, { useEffect, useState } from "react";
+import { Alert, Box, Checkbox, CircularProgress, Menu, MenuItem, Snackbar} from "@mui/material";
 import Card from '@mui/material/Card';
 import CardHeader from '@mui/material/CardHeader';
 import CardMedia from '@mui/material/CardMedia';
@@ -15,20 +15,46 @@ import ShareIcon from '@mui/icons-material/Share';
 import CommentIcon from '@mui/icons-material/Comment';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import Carousel from 'react-material-ui-carousel'
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import Comments from "./Comments";
 import { useLocation } from "react-router-dom";
 import ShowComments from "./ShowComments";
+import { hitLike } from "../actions/likeActions";
+import { RWebShare } from "react-web-share";
 
 export default function ShowPost(props){
     const location = useLocation()
+    const dispatch = useDispatch()
     const post = location.state?.post
+    const likes = useSelector((state)=>{
+        return state.likes.data
+    })
+    const comments = useSelector((state)=>{
+        return state.comments.data
+    })
     const community = useSelector((state)=>{
         return state.communities.data.find(com=>location.state?.post.community==com._id)
     })
     const user = useSelector((state)=>{
         return state.users.data
     })
+    const [open, setOpen] = useState(false)
+    useEffect(()=>{
+        setTimeout(()=>{
+            setOpen(false)
+        },[6000])
+    },[open])
+
+    const copyToClipboard = async (url) => {
+        try {
+          await navigator.clipboard.writeText(url);
+          setOpen(true)
+        } catch (error) {
+          console.error('Unable to copy to clipboard', error);
+        }
+      };
+    
+
     const [anchorEl, setAnchorEl] = useState(null);
     
     const [cM, setCM] = useState(false)
@@ -127,13 +153,16 @@ export default function ShowPost(props){
                 </Typography>
             </CardContent>
             <CardActions disableSpacing>
-                <IconButton aria-label="add to favorites">
-                <Checkbox  icon={<FavoriteBorder />} checkedIcon={<Favorite />} />
+            <IconButton aria-label="like" onClick={()=>{dispatch(hitLike(post._id))}}>
+                {likes.find(like=>{
+                    return like.targetId==post._id && like.userId==user._id}) ? <Favorite sx={{color: 'red'}}/> : <FavoriteBorder />}
+                <Typography>{likes.filter(like=>like.targetId==post._id).length}</Typography>
                 </IconButton>
                 <IconButton aria-label="comment" >
                     <CommentIcon />
+                    <Typography>{comments?.filter(c=>c.post==post._id).length}</Typography>
                 </IconButton>
-                <IconButton aria-label="share">
+                <IconButton aria-label="share" onClick={()=>{copyToClipboard(post.content)}}>
                     <ShareIcon />
                 </IconButton>
             </CardActions>
@@ -142,6 +171,11 @@ export default function ShowPost(props){
         <hr/>
         <Comments postId={post._id}/>
         <ShowComments postId={post._id}/>
+        <Snackbar open={open} autoHideDuration={6000} >
+            <Alert severity="success" sx={{ width: '100%' }}>
+                Link Copied to Clipboard
+            </Alert>
+            </Snackbar>
         </Box>
             : 
         <Box height='600px' flex={4} p={4} display="flex" flexDirection="column" alignItems="center" justifyContent="center">

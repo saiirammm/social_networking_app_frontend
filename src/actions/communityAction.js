@@ -8,6 +8,9 @@ export const joinLeft = (data) => {
     return {type: 'JOIN_LEFT_COM', payload: data}
 }
 
+export const deleteCommunityF = (id) => {
+    return {type: 'DEL_COM', payload: id}
+}
 
 export const comEditDispatch = (data) => {
     return {type: 'EDIT_COM', payload: data}

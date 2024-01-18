@@ -9,6 +9,7 @@ import { logoutFunc } from "../actions/userActions";
 import {addDispatch} from '../actions/authActions'
 import { useNavigate } from "react-router-dom";
 import { blue } from "@mui/material/colors";
+import Popper from '@mui/material/Popper';
 
 const StyledToolbar = styled(Toolbar)({
     display: 'flex',
@@ -109,7 +110,8 @@ export default function NavBar(props){
                         </Box>
                     )}
                     onChange={handleAutocompleteChange}
-                    renderInput={(params)=> <TextField {...params} placeholder="search" onKeyDown={handleKeyDown} />
+                    renderInput={(params)=>
+                        <TextField {...params} placeholder="search" onKeyDown={handleKeyDown} />
                 }
                 />
                 <Profile>

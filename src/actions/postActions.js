@@ -1,6 +1,6 @@
 import axios from '../config/axios'
 
-const getPostDispatch = (data) => {
+export const getPostDispatch = (data) => {
     return {type: 'GET_POSTS', payload: data}
 }
 
