@@ -1,55 +1,64 @@
 import { Box, Card, CardMedia, Stack, Typography, IconButton } from '@mui/material';
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { addPostDispatch } from '../actions/postActions';
-import { Alert, Button, Checkbox, CircularProgress, FormControl, FormControlLabel, InputLabel, MenuItem, Paper, Select, Snackbar,TextField, TextareaAutosize} from '@mui/material'
+import {  Button,  CircularProgress,TextField, } from '@mui/material'
 import {Formik, Form, Field, ErrorMessage} from 'formik'
 import * as Yup from 'yup' 
 import axios from '../config/axios';
 import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
+import Toaster from './Toaster';
 
 
 export default function CreatePost() {
   const [l, setL] = useState(false)
   const [open, setOpen] = useState(false)
   const [message, setMessage] = useState('')
+  const [error, setError] = useState(false)
+  const [serverError, setServerError] = useState('')
   const user = useSelector((state)=>{
     return state.users.data
-})
+  })
   const community = useSelector((state)=>{
     return state.communities.data.find(com => com.createdBy == user._id)
-})
+  })
+  useEffect(()=>{
+    setTimeout(()=>{
+        setError(false)
+        setOpen(false)
+    }, 6000)
+}, [open])
   const navigate = useNavigate()
-    const [files, setFiles] = useState([]);
-    const onDrop = useCallback((acceptedFiles, rejectedFiles) => {
-      if (acceptedFiles?.length) {
-        setFiles((previousFiles) => [
-          ...previousFiles,
-          ...acceptedFiles.map((file) =>
-            Object.assign(file, { preview: URL.createObjectURL(file) })
-          ),
-        ]);
-      }
-      if (rejectedFiles?.length) {
-        alert(rejectedFiles[0].errors[0].code);
-      }
-    },[]);
-    const removeFile = (indexToRemove) => {
-      setFiles((prevFiles) => prevFiles.filter((file, index) => index !== indexToRemove));
-    };
+  const [files, setFiles] = useState([]);
+  const onDrop = useCallback((acceptedFiles, rejectedFiles) => {
+    if (acceptedFiles?.length) {
+      setFiles((previousFiles) => [
+        ...previousFiles,
+        ...acceptedFiles.map((file) =>
+          Object.assign(file, { preview: URL.createObjectURL(file) })
+        ),
+      ]);
+    }
+    if (rejectedFiles?.length) {
+      alert(rejectedFiles[0].errors[0].code);
+    }
+  },[]);
+  const removeFile = (indexToRemove) => {
+    setFiles((prevFiles) => prevFiles.filter((file, index) => index !== indexToRemove));
+  };
 
-    const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop, maxFiles: 4, accept: {
-      'image/*': ['.jpg', '.jpeg', '.png', '.gif'],
-      'video/*': ['.mp4', '.avi', '.mkv'],
-    } });
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop, maxFiles: 4, accept: {
+    'image/*': ['.jpg', '.jpeg', '.png', '.gif'],
+    'video/*': ['.mp4', '.avi', '.mkv'],
+  } });
 
-    const initialValues = {
-      title: '',
-      body: '',
-      community: ''
-      
+  const initialValues = {
+    title: '',
+    body: '',
+    community: ''
+    
   }
   const handleSubmit = async(values, {resetForm, setSubmitting}) => {
       const formData = new FormData()
@@ -60,22 +69,24 @@ export default function CreatePost() {
       setL(true)
       try{
         const response = await axios.post('api/post/create', formData)
-        console.log(response.data)
         setMessage('post created successfully')
+        setOpen(true)
         setTimeout(()=>{
-          addPostDispatch(response.data)
-          setOpen(true)
+          addPostDispatch(response.data.post)
           resetForm()
           setFiles([])
           navigate('/')
-        })
-        setOpen(true)
-        setSubmitting(false)
+        }, 2000)
       }catch(e){
-        console.log(e)
+        if(e.code=='ERR_NETWORK'){
+          setServerError('network error')
+      }else{
+          setServerError(e.code)
+      }
+      setError(true)
+      }finally{
         setL(false)
-        setMessage(e.response.data.errors)
-        setOpen(true)
+        setSubmitting(false)
       }
   }
     const validationSchema = Yup.object().shape({
@@ -149,11 +160,8 @@ export default function CreatePost() {
               )}
             </Formik>
       </Box>
-      <Snackbar open={open} autoHideDuration={6000} >
-      <Alert severity="success" sx={{ width: '100%' }}>
-        {message}
-      </Alert>
-      </Snackbar>
+      <Toaster success={open} successMsg={message}/>
+      <Toaster error={error} errorMsg={serverError}/>
     </Box>
   );
 }

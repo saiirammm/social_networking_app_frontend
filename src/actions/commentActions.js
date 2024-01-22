@@ -14,6 +14,20 @@ export const createCommDispatch = (data) => {
     }
 }
 
+export const deleteComDispatch = (id) => {
+    return {
+        type: 'DEL_COM',
+        payload: id
+    }
+}
+
+export const editCommentDispatch = (data) => {
+    return {
+        type: 'EDIT_COM',
+        payload: data
+    }
+}
+
 export const getComments = () => {
     return async(dispatch)=>{
         try{

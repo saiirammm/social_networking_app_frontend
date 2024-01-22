@@ -8,6 +8,18 @@ export default function commentReducer(state=iState, action){
         case 'CREATE_COMMENT': {
             return {...state, data: [...state.data, {...action.payload}]}
         }
+        case 'DEL_COM' : {
+            return {...state, data: state.data.filter(com=>com._id!==action.payload)}
+        }
+        case 'EDIT_COM': {
+            return {...state, data: state.data.map(com=>{
+                if(com._id==action.payload._id){
+                    return {...action.payload}
+                }else{
+                    return {...com}
+                }
+            })}
+        }
         default:{
             return {...state}
         }

@@ -1,4 +1,4 @@
-import { Box, List, ListItem, ListItemIcon, ListItemText, ListItemButton, Collapse } from "@mui/material";
+import { Box, List, ListItemIcon, ListItemText, ListItemButton, Collapse } from "@mui/material";
 import React, {useState} from "react";
 import HomeIcon from '@mui/icons-material/Home';
 import PostAddIcon from '@mui/icons-material/PostAdd';
@@ -8,6 +8,7 @@ import ExpandLess from '@mui/icons-material/ExpandLess';
 import ExpandMore from '@mui/icons-material/ExpandMore';
 import {useNavigate} from 'react-router-dom'
 import {useSelector} from 'react-redux'
+import FlagIcon from '@mui/icons-material/Flag';
 export default function SideBar(props){
     const [open, setOpen] = useState(false)
     const categoryData = useSelector((state)=>{
@@ -16,7 +17,6 @@ export default function SideBar(props){
     const user = useSelector((state)=>{
         return state.users.data
     })
-    console.log(user)
     const community = useSelector((state)=>{
         return state.communities.data.find(com => com.createdBy == user._id)
     })
@@ -67,7 +67,7 @@ export default function SideBar(props){
                     </List>
                 </Collapse>
                 { community ? 
-                <List>
+                <>
                     <ListItemButton onClick={()=>{navigate('/show/community', {state:{id: community._id}})}}>
                     <ListItemIcon>
                         <GroupIcon />
@@ -80,7 +80,7 @@ export default function SideBar(props){
                     </ListItemIcon>
                     <ListItemText primary='Create Post' />
                 </ListItemButton>
-                </List>
+                </>
                 :
                 <ListItemButton onClick={handleCreateCom}>
                     <ListItemIcon>
@@ -88,8 +88,13 @@ export default function SideBar(props){
                     </ListItemIcon>
                     <ListItemText primary='Create Community' />
                 </ListItemButton> }
-                
-                
+                {user.role=='admin' && 
+                    <ListItemButton onClick={()=>{navigate('/show/reportedPosts')}}>
+                    <ListItemIcon>
+                        <FlagIcon />
+                    </ListItemIcon>
+                    <ListItemText primary='reported posts' />
+                </ListItemButton>}
             </List>
         </Box>
         </Box>

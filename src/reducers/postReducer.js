@@ -6,7 +6,7 @@ export default function postReducer(state = iState, action){
             return {...state, ...action.payload}
         }
         case 'ADD_POST': {
-            return {...state, data:[...state.data, action.payload.data]}
+            return {...state, data:[...state.data, {...action.payload}]}
         }
         default:{
             return {...state}

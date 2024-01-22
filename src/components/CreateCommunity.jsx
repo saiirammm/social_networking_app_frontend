@@ -1,11 +1,12 @@
-import React,{useState} from 'react'
+import React,{useEffect, useState} from 'react'
 import axios from '../config/axios'
-import { Alert, Box, Button, Checkbox, CircularProgress, FormControl, FormControlLabel, InputLabel, MenuItem, Paper, Select, Snackbar, Stack, TextField, TextareaAutosize, Typography } from '@mui/material'
+import { Box, Button, Checkbox, CircularProgress, FormControl, FormControlLabel, InputLabel, MenuItem, Paper, Select,  Stack, TextField, TextareaAutosize, Typography } from '@mui/material'
 import {Formik, Form, Field, ErrorMessage} from 'formik'
 import * as Yup from 'yup' 
 import { useDispatch, useSelector } from 'react-redux'
 import { useLocation, useNavigate } from 'react-router-dom'
-import { comEditDispatch, createCom } from '../actions/communityAction'
+import { comEditDispatch} from '../actions/communityAction'
+import Toaster from './Toaster'
 
 
 export default function CreateCommunity(props){
@@ -13,6 +14,8 @@ export default function CreateCommunity(props){
     const [message, setMessage] = useState('')
     const location = useLocation()
     const [open, setOpen] = useState(false)
+    const [error, setError] = useState(false)
+    const [serverError, setServerError] = useState('')
     const categoryData = useSelector((state)=>{
         return state.categories.data
     })
@@ -26,40 +29,60 @@ export default function CreateCommunity(props){
         membershipFee: location.state ? location.state.community.membershipFee : 0
         
     }
+    useEffect(()=>{
+        setTimeout(()=>{
+            setError(false)
+            setOpen(false)
+        }, 6000)
+    })
     const handleSubmitCreate = async(values, {resetForm, setSubmitting}) => {
         try{
+            setSubmitting(true)
             setL(true)
             const response = await axios.post('api/community/create', values)
-            console.log(response.data)
             dispatch({type: 'CREATE_COM', payload: response.data.community})
             setMessage(response.data.msg)
             setOpen(true)
             setTimeout(()=>{
                 resetForm()
-                setSubmitting(true)
                 navigate(`/show/community`, {state:{id: response.data.community._id}})
             },3000)
         }
         catch(e){
+            if(e.code=='ERR_NETWORK'){
+                setServerError('network error')
+            }else{
+                setServerError(e.response.data.errors)
+            }
+            setError(true)
+        }finally{
             setL(false)
+            setSubmitting(false)
         }
     }
     const handleSubmitEdit = async(values, {resetForm, setSubmitting}) => {
         try{
+            setSubmitting(true)
             setL(true)
             const response = await axios.put(`/api/community/edit/${location.state.community._id}`, values)
-            console.log(response.data)
             dispatch(comEditDispatch(response.data.community))
             setMessage(response.data.message)
             setOpen(true)
             setTimeout(()=>{
                 resetForm()
-                setSubmitting(true)
                 navigate(`/show/community`, {state: {id: response.data.community._id}})
             },3000)
         }
         catch(e){
+            if(e.code=='ERR_NETWORK'){
+                setServerError('network error')
+            }else{
+                setServerError(e.response.data.errors)
+            }
+            setError(true)
+        }finally{
             setL(false)
+            setSubmitting(false)
         }
     }
     const validationSchema = Yup.object().shape({
@@ -131,11 +154,8 @@ export default function CreateCommunity(props){
                             </Form>
                         )}
                     </Formik>
-                <Snackbar open={open} autoHideDuration={6000} >
-                <Alert severity="success" sx={{ width: '100%' }}>
-                    {message}
-                </Alert>
-                </Snackbar>
+                <Toaster success={open} successMsg={message}/>
+                <Toaster error={error} errorMsg={serverError}/>
             </Paper>
         </Box>
     )

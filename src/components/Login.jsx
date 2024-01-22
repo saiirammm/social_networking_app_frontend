@@ -1,23 +1,31 @@
-import React, {useState} from 'react'
+import React, {useEffect, useState} from 'react'
 import axios from '../config/axios'
-import { Alert, Box, Button, CircularProgress, Paper, Snackbar, Stack, TextField, Typography } from '@mui/material'
+import {  Box, Button, CircularProgress, Paper,  Stack, TextField, Typography } from '@mui/material'
 import {Formik, Form, Field, ErrorMessage} from 'formik'
 import * as Yup from 'yup' 
 import { useNavigate } from 'react-router-dom'
 import { useDispatch } from 'react-redux'
 import { loginFunc } from '../actions/userActions'
+import Toaster from './Toaster'
 export default function Login(props){
     const {handleModalClose, handleOpenRegisterModal} = props
     const dispatch = useDispatch()
     const [l, setL] = useState(false)
     const [message, setMessage] = useState('')
     const [open, setOpen] = useState(false)
+    const [error, setError] = useState(false)
     const [serverError, setServerError] = useState('')
     const navigate = useNavigate()
     const initialValues = {
         email: '',
         password: ''
     }
+    useEffect(()=>{
+        setTimeout(()=>{
+            setError(false)
+            setOpen(false)
+        }, 6000)
+    },[])
     const validationSchema = Yup.object().shape({
         email: Yup.string()
         .email('enter valid email')
@@ -29,6 +37,7 @@ export default function Login(props){
     })
     const handleSubmit = async(values, {resetForm, setSubmitting}) => {
         try{
+            setSubmitting(true)
             setL(true)
             const response = await axios.post('api/user/login', values)
             console.log(response.data, 'login component')
@@ -41,11 +50,16 @@ export default function Login(props){
                 navigate('/')
             },1500)
             setOpen(true)
-            setSubmitting(false)
-            setL(false)
         }
         catch(e){
-            setServerError(e.response.data.errors)
+            if(e.code=='ERR_NETWORK'){
+                setServerError('network error')
+            }else{
+                setServerError(e.response.data.errors)
+            }
+            setError(true)
+        }
+        finally{
             setL(false)
             setSubmitting(false)
         }
@@ -88,16 +102,8 @@ export default function Login(props){
                 <Box display='flex' justifyContent='space-between'>
                     <Typography paddingTop='20px'>Don't have an account?<Button onClick={regiModelOpen}>Register</Button> </Typography>
                 </Box>
-                <Snackbar open={open} autoHideDuration={6000} >
-                <Alert severity="success" sx={{ width: '100%' }}>
-                    {message}
-                </Alert>
-                </Snackbar>
-                <Snackbar open={serverError.length} autoHideDuration={6000} >
-                <Alert severity="success" sx={{ width: '100%' }}>
-                    {message}
-                </Alert>
-                </Snackbar>
+                <Toaster success={open} successMsg={message}/>
+                <Toaster error={error} errorMsg={serverError}/>
             </Paper>
         </Box>
     )

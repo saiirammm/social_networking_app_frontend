@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Alert, Box, Checkbox, CircularProgress, Menu, MenuItem, Snackbar} from "@mui/material";
+import { Alert, Box, CircularProgress, Menu, MenuItem, Modal, Snackbar} from "@mui/material";
 import Card from '@mui/material/Card';
 import CardHeader from '@mui/material/CardHeader';
 import CardMedia from '@mui/material/CardMedia';
@@ -17,13 +17,26 @@ import MoreVertIcon from '@mui/icons-material/MoreVert';
 import Carousel from 'react-material-ui-carousel'
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import axios from "../config/axios";
 import { hitLike } from "../actions/likeActions";
+import Toaster from "./Toaster";
+import Report from "./Report";
+import axios from '../config/axios'
 
 export default function ShowPosts(props){
-    const {posts} = props
+    const {posts, removePosts} = props
     const navigate = useNavigate()
     const dispatch = useDispatch()
+    const [loading, setLoading] = useState(true)
+    const [message, setMessage] = useState('')
+    const [open, setOpen] = useState(false)
+    const [error, setError] = useState(false)
+    const [errorMsg, setErrorMsg] = useState('')
+    useEffect(()=>{
+        setTimeout(()=>{
+            setError(false)
+            setOpen(false)
+        }, 6000)
+    }, [open, error])
     const communities = useSelector((state)=>{
         return state.communities.data
     })
@@ -36,44 +49,54 @@ export default function ShowPosts(props){
     const comments = useSelector((state)=>{
         return state.comments.data
     })
-    const [open, setOpen] = useState(false)
+    const [openModal, setOpenModal] = useState(false)
+
     useEffect(()=>{
         setTimeout(()=>{
             setOpen(false)
+            setError(false)
         },[6000])
     },[open])
 
     const copyToClipboard = async (url) => {
         try {
           await navigator.clipboard.writeText(url);
+          setMessage('copied to clipBoard')
           setOpen(true)
         } catch (error) {
-          console.error('Unable to copy to clipboard', error);
+            setErrorMsg('error occurred while copying')
+          setError(true)
         }
-      };
-    const [anchorEl, setAnchorEl] = useState(null);
-    
-    const [cM, setCM] = useState(false)
-    const [uM, setUM] = useState(false)
-    const handleClick = (id, event) => {
-        console.log('handleClick called')
-            if(user._id==id){
-                setCM(true)
-                setUM(false)
-            }else{
-                setUM(true)
-                setCM(false)
-            }
-            setAnchorEl(event.currentTarget);
     };
-    const handleClose = () => {
-      setAnchorEl(null);
+    const [anchorElMap, setAnchorElMap] = useState({});
+
+    const handleClick = (postId, event) => {
+    setAnchorElMap((prev) => ({ ...prev, [postId]: event.currentTarget }));
     };
+
+    const handleClose = (postId) => {
+    setAnchorElMap((prev) => ({ ...prev, [postId]: null }));
+    };
+
+    const handleDelete = async(id) => {
+        try{
+            const response = await axios.delete(`api/dltPost/${id}`)
+            setMessage(response.data.message)
+            setOpen(true)
+            setTimeout(()=>{
+                window.location.reload()
+            }, 1000)
+        }catch(e){
+            setErrorMsg(e.code)
+            setError(true)
+
+        }
+    }
+
     return (
     <Box sx={{flex:{xs: 40, md: 4}}} p={2} >
-        {  ((posts.length && communities.length) && likes) ? posts.map(post=>{
+        { ((posts.length && communities.length) && likes) ? posts.map(post=>{
             const community = communities.find(com=> post.community == com._id )
-            console.log(community,post,likes)
             return <Card key={post._id} sx={{margin:'0 auto', marginBottom: '20px'}}>
                         <CardHeader
                         sx={{height: 'auto', padding: '10px', bgcolor: ''}}
@@ -84,39 +107,39 @@ export default function ShowPosts(props){
                             }
                             action={
                                 <Box>
-                                    <IconButton aria-label="settings" onClick={(event)=>{handleClick(post.user, event)}}>
+                                    <IconButton aria-label="settings" onClick={(event) => { handleClick(post._id, event) }}>
                                     <MoreVertIcon />
                                     </IconButton>
                                     <Menu
-                                    anchorEl={anchorEl}
-                                    open={Boolean(anchorEl)}
-                                    onClose={handleClose}
+                                    anchorEl={anchorElMap[post._id]}
+                                    open={Boolean(anchorElMap[post._id])}
+                                    onClose={() => handleClose(post._id)}
                                     >
-                                    <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleClose}>
-                                        {cM && (
-                                            <Box>
-                                                <MenuItem onClick={handleClose}>delete post</MenuItem>
-                                                <MenuItem onClick={handleClose}>edit post</MenuItem>
-                                            </Box>
-                                        )}
-                                        {uM && (
-                                            <Box>
-                                                <MenuItem onClick={handleClose}>report post</MenuItem>
-                                                <MenuItem onClick={handleClose}>check community</MenuItem>
-                                            </Box>
-                                        )}
-                                    </Menu>
+                                        { user._id === post.user || user.role === 'admin'? 
+                                        <Box>
+                                            <MenuItem onClick={()=>{handleDelete(post._id)}}>delete post</MenuItem>
+                                            {post.reports && <MenuItem onClick={()=>{removePosts(post._id)}}>remove post</MenuItem>}
+                                        </Box>: <Box>
+                                        <MenuItem onClick={()=>{setOpenModal(true)}}>report post</MenuItem> 
+                                        <MenuItem onClick={()=>{navigate('/show/community', {state: {id: community._id}})}}>check community</MenuItem>
+                                        <Modal
+                                        open={openModal}
+                                        onClose={()=>{setOpenModal(false)}}
+                                        >
+                                            <Report postId={post._id} onComplete={setOpenModal}/>
+                                        </Modal>
+                                        </Box> }
                                     </Menu>
                                 </Box>
                             }
                             title={<Typography variant="h6">{community.name}</Typography>}
                         />
-                        {post.content.length>1 ? <Carousel>
+                        {post.content.length>1 ? <Carousel height='374px'>
                             {post.content.map(ele=>{
                                 return (post.type.includes('image') ? 
                                 <CardMedia
                                     component='img'
-                                    height="20%"
+                                    height="374px"
                                     image={ele}
                                     alt="img"
                                 /> : 
@@ -152,7 +175,6 @@ export default function ShowPosts(props){
                         <CardActions disableSpacing>
                             <IconButton aria-label="like" onClick={()=>{dispatch(hitLike(post._id))}}>
                             {likes.find(like=>{
-                                console.log(like,user,post)
                                 return like.targetId==post._id && like.userId==user._id}) ? <Favorite sx={{color: 'red'}}/> : <FavoriteBorder />}
                             <Typography>{likes.filter(like=>like.targetId==post._id).length}</Typography>
                             </IconButton>
@@ -164,16 +186,14 @@ export default function ShowPosts(props){
                                 <ShareIcon />
                             </IconButton>
                         </CardActions>
-                        <Snackbar open={open} autoHideDuration={6000} >
-                        <Alert severity="success" sx={{ width: '100%' }}>
-                            Link Copied to Clipboard
-                        </Alert>
-                        </Snackbar>
+                        {post.reports && <Typography marginLeft='5px'><b>report count</b>: {post.reports}</Typography>}
+                        <Toaster success={open} successMsg={message}/>
+                        <Toaster error={error} errorMsg={errorMsg}/>
                     </Card>
                 }) : 
                 <Box height='600px' flex={4} p={4} display="flex" flexDirection="column" alignItems="center" justifyContent="center">
                 <CircularProgress />
-                </Box> }
+                </Box>}
                 
     </Box>
 )

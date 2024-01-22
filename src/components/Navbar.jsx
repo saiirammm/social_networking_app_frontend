@@ -1,4 +1,4 @@
-import { AppBar, Avatar, styled, Toolbar, Typography, InputBase, Menu, MenuItem, Button, Box, Modal, Stack, TextField, Paper} from "@mui/material";
+import { AppBar, Avatar, styled, Toolbar, Typography,  Menu, MenuItem,  Box, Modal, Stack, TextField, } from "@mui/material";
 import StayCurrentPortraitIcon from '@mui/icons-material/StayCurrentPortrait';
 import React, {useState, useEffect} from "react";
 import Autocomplete from '@mui/material/Autocomplete';
@@ -9,21 +9,10 @@ import { logoutFunc } from "../actions/userActions";
 import {addDispatch} from '../actions/authActions'
 import { useNavigate } from "react-router-dom";
 import { blue } from "@mui/material/colors";
-import Popper from '@mui/material/Popper';
 
 const StyledToolbar = styled(Toolbar)({
     display: 'flex',
     justifyContent: 'space-between'
-})
-
-
-const Search = styled('div')({
-    display:'flex',
-    justifyContent:'space-between',
-    backgroundColor: 'white',
-    padding: '0px 20px',
-    width: '30%',
-    borderRadius: '5px'
 })
 
 const Profile = styled('div')({
@@ -34,7 +23,6 @@ const Profile = styled('div')({
     gap:'5px'
 })
 export default function NavBar(props){
-    const [open, setOpen] = useState(false)
     const [openRegisterModal, setOpenRegisterModal] = useState(false)
     const [openLoginModal, setOpenLoginModal] = useState(false)
     const [anchorEl, setAnchorEl] = useState(null);
@@ -116,7 +104,7 @@ export default function NavBar(props){
                 />
                 <Profile>
                     <Avatar sx={{ bgcolor: 'white' , height:'25px', width: '25px',fontSize: '15px'}} aria-label="profile" onClick={(e)=>{setAnchorEl(e.currentTarget)}}>
-                    {user.username ? <Typography color={blue[800]} >{user.username[0].toUpperCase()}</Typography> : null}
+                    {user.username ? <Typography color={blue[800]} >{user.username[0].toUpperCase()}</Typography> : <Typography color={blue[800]} >?</Typography>}
                     </Avatar>
                     <Typography >{user.username ? user.username : 'GUEST'}</Typography>
                     <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={()=>{setAnchorEl(null)}}>

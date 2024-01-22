@@ -1,14 +1,16 @@
-import React, {useState} from 'react'
+import React, {useEffect, useState} from 'react'
 import axios from '../config/axios'
-import { Alert, Box, Button, CircularProgress, Paper, Snackbar, Stack, TextField, Typography } from '@mui/material'
+import { Box, Button, CircularProgress, Paper, Stack, TextField, Typography } from '@mui/material'
 import {Formik, Form, Field, ErrorMessage} from 'formik'
 import * as Yup from 'yup' 
+import Toaster from './Toaster'
 export default function Register(props){
     const {handleModalClose, handleOpenLoginModal} = props
     const [l, setL] = useState(false)
     const [message, setMessage] = useState('')
     const [open, setOpen] = useState(false)
-    const [serverError, setServerError] = useState([])
+    const [error, setError] = useState(false)
+    const [serverError, setServerError] = useState('')
     const initialValues = {
         username: '',
         email: '',
@@ -18,6 +20,12 @@ export default function Register(props){
         handleModalClose()
         handleOpenLoginModal()
     }
+    useEffect(()=>{
+        setTimeout(()=>{
+            setError(false)
+            setOpen(false)
+        }, 6000)
+    })
     const validationSchema = Yup.object().shape({
         username: Yup.string()
         .min(3, 'username must be 3 characters long')
@@ -30,20 +38,29 @@ export default function Register(props){
         .max(128, 'password should be between 8 to 128 character long')
         .required('password cannot be empty')
     })
-    const handleSubmit = async(values, props) => {
+    const handleSubmit = async(values, {resetForm, setSubmitting}) => {
         console.log(values)
         try{
+            setSubmitting(true)
             setL(true)
             const response = await axios.post('api/user/register', values)
             setMessage(response.data.msg)
             setOpen(true)
             setTimeout(()=>{
                 handleLogIn()
+                resetForm()
             },3000)
         }
         catch(e){
-            console.log(e.response.data.errors)
+            if(e.code=='ERR_NETWORK'){
+                setServerError('network error')
+            }else{
+                setServerError(e.response.data.errors)
+            }
+            setError(true)
+        }finally{
             setL(false)
+            setSubmitting(false)
         }
     }
     return (
@@ -85,11 +102,8 @@ export default function Register(props){
                         )}
                     </Formik>
                 <Typography paddingTop='10px'>Already have an account? <Button onClick={handleLogIn}>login</Button></Typography>
-                <Snackbar open={open} autoHideDuration={6000} >
-                <Alert severity="success" sx={{ width: '100%' }}>
-                    {message}
-                </Alert>
-                </Snackbar>
+                <Toaster success={open} successMsg={message}/>
+                <Toaster error={error} errorMsg={serverError}/>
             </Paper>
         </Box>
     )
