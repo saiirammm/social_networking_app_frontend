@@ -71,8 +71,8 @@ export default function ShowCommunity(props){
                 <h3>{community.description}</h3>
                 {
                     !(community.createdBy==user._id) ?
-                     <Button onClick={community.users.find(id=>id==user._id)?handleJoin:handleConfirm} variant="contained" size="small" >
-                        {community.users.find(id=>id==user._id) ? 'Leave community' : 'join community'}
+                     <Button onClick={community.users && community.users.find(id=>id==user._id)?handleJoin:handleConfirm} variant="contained" size="small" >
+                        {community.users && community.users.find(id=>id==user._id) ? 'Leave community' : 'join community'}
                     </Button> : 
                     <Box>
                         <Button variant='contained' sx={{marginRight: '10px'}} onClick={()=>{navigate('/create/community', {state:{community: community}})}}>edit community</Button>
