@@ -1,5 +1,5 @@
 import { Box, Button, CircularProgress, Dialog, DialogActions, DialogTitle, Typography } from "@mui/material";
-import React, {  useState } from "react";
+import React, {  useState , useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch} from "react-redux";
 import axios from "../config/axios";
@@ -11,15 +11,23 @@ export default function ShowCommunity(props){
     const location = useLocation()
     const dispatch = useDispatch()
     const navigate = useNavigate()
+    const [id , setId] =  useState(location.state ? location.state.id : localStorage.getItem('comId'))
+    useEffect (() => {
+        localStorage.setItem('comId' , location.state?.id)
+         if(location.state) {
+             setId(location.state.id)
+         } 
+    }, [location.state])
     const posts = useSelector((state)=>{
-            return state.posts.data.filter(post=>location.state?.id==post.community)
+            return state.posts.data.filter(post=> id==post.community)
     })
     const community = useSelector((state)=>{
-        return state.communities.data.find(com=> com._id == location.state?.id)
+        return state.communities.data.find(com=> com._id == id)
     })
-    const user = useSelector((state)=>{
+    const user = useSelector((state)=>{ 
         return state.users.data
     })
+    
     const [openDialog, setOpenDialog] = useState(false);
     const [del, setDel] = useState(false)
 
@@ -51,7 +59,7 @@ export default function ShowCommunity(props){
             dispatch(joinLeft(updatedCom));
             setOpenDialog(false);
         } catch (e) {
-            alert(e.response.data.error);
+            alert(e.response.data.errors);
             setOpenDialog(false);
         }
     };
@@ -59,15 +67,33 @@ export default function ShowCommunity(props){
     const handleCancel = () => {
         setOpenDialog(false);
         setDel(false)
-    };
+    }; 
+
+    const handleSubscribe = async()=> {
+        try {
+            const response = await axios.post('api/payment/pay' , {
+                
+                communityId : community._id,
+                amount : community.membershipFee
+            }) 
+            console.log(response)
+            const data = response.data
+            window.location = data.url
+
+            
+
+        } catch (e) {
+            console.log(e)
+        }
+    }
 
     return (
-        community  ?
+        community && user ? 
         <Box sx={{flex:{xs: 40, md: 4}}} p={2}>
             <Box bgcolor='skyblue' 
             padding='10px'
             borderRadius='10px'>
-                <h1>{community.name} | {community.premium ? <b>premium</b> : <b>free</b> }</h1>
+                <h1>{community.name} | {community.premium ? <b>premium  <Button variant = 'contained'  onClick = {handleSubscribe}> Subscribe </Button> </b>  : <b>free</b> }</h1>
                 <h3>{community.description}</h3>
                 {
                     !(community.createdBy==user._id) ?
@@ -102,11 +128,13 @@ export default function ShowCommunity(props){
                     create one
                 </Button></Typography>)
                 :
-                (!community.premium ? 
+                (community.users.includes(user._id) ? 
                 (posts.length ? <ShowPosts posts={posts}/> : 
-                <Typography marginTop='30px' textAlign='center' variant="h6">No Posts in this Community</Typography>) :
-                <Typography marginTop='30px' textAlign='center' variant="h6">This is premium community you need to join to access the content</Typography>)
-            }
+                <Typography marginTop='30px' textAlign='center' variant="h6">No Posts in this Community</Typography>) : (user._id == community.createdBy || user.role == 'admin') ? <ShowPosts posts={posts}/> : 
+                <Typography marginTop='30px' textAlign='center' variant="h6">This is premium community you need to subscribe to access the content</Typography>)
+                
+            } 
+                
         </Box>
         : 
         <Box height='600px' flex={4} p={4} display="flex" flexDirection="column" alignItems="center" justifyContent="center">
