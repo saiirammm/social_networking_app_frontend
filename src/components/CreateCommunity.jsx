@@ -34,7 +34,7 @@ export default function CreateCommunity(props){
             setError(false)
             setOpen(false)
         }, 6000)
-    })
+    },[])
     const handleSubmitCreate = async(values, {resetForm, setSubmitting}) => {
         try{
             setSubmitting(true)

@@ -20,7 +20,6 @@ export default function SideBar(props){
     const community = useSelector((state)=>{
         return state.communities.data.find(com => com.createdBy == user._id)
     })
-    console.log(community)
     const authHandlers = useSelector((state)=>{
         return state.auth
     })

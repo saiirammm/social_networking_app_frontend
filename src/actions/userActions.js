@@ -5,7 +5,6 @@ export const loginFunc = () => {
     return async(dispatch)=>{
         try{
             const user = await axios.get('api/user')
-            console.log(user, 'login dispatched')
             dispatch(loginDispatch({data: {...user.data}}))
         }catch(e){
             if(e.code=='ERR_NETWORK'){

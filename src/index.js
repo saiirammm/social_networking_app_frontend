@@ -6,9 +6,6 @@ import configStore from './store/configStore';
 import {BrowserRouter} from 'react-router-dom'
 
 const store = configStore()
-store.subscribe(()=>{
-  console.log(store.getState())
-})
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(

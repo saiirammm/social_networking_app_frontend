@@ -1,4 +1,5 @@
 import { Box, Button, CircularProgress, Dialog, DialogActions, DialogTitle, Typography } from "@mui/material";
+import WorkspacePremiumIcon from '@mui/icons-material/WorkspacePremium';
 import React, {  useState , useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch} from "react-redux";
@@ -57,9 +58,13 @@ export default function ShowCommunity(props){
             const response = await axios.post(`api/community/join/${community._id}`);
             const updatedCom = { ...community, users: response.data.users };
             dispatch(joinLeft(updatedCom));
-            setOpenDialog(false);
-        } catch (e) {
-            alert(e.response.data.errors);
+        }catch (e) {
+            if(e.code=='ERR_NETWORK'){
+                alert('network error')
+            }else{
+                alert(e.response.data.errors)
+            };
+        }finally{
             setOpenDialog(false);
         }
     };
@@ -72,16 +77,12 @@ export default function ShowCommunity(props){
     const handleSubscribe = async()=> {
         try {
             const response = await axios.post('api/payment/pay' , {
-                
                 communityId : community._id,
                 amount : community.membershipFee
             }) 
             console.log(response)
             const data = response.data
             window.location = data.url
-
-            
-
         } catch (e) {
             console.log(e)
         }
@@ -93,13 +94,19 @@ export default function ShowCommunity(props){
             <Box bgcolor='skyblue' 
             padding='10px'
             borderRadius='10px'>
-                <h1>{community.name} | {community.premium ? <b>premium  <Button variant = 'contained'  onClick = {handleSubscribe}> Subscribe </Button> </b>  : <b>free</b> }</h1>
+                <h1>{community.name}{community.premium && <WorkspacePremiumIcon sx={{color: 'darkblue'}}/>}</h1>
                 <h3>{community.description}</h3>
                 {
                     !(community.createdBy==user._id) ?
-                     <Button onClick={community.users && community.users.find(id=>id==user._id)?handleJoin:handleConfirm} variant="contained" size="small" >
-                        {community.users && community.users.find(id=>id==user._id) ? 'Leave community' : 'join community'}
-                    </Button> : 
+                    <Box>
+                        <Button onClick={community.users && community.users.find(id=>id==user._id)?handleJoin:handleConfirm} variant="contained" size="small" sx={{marginRight: '10px'}}>
+                            {community.users && community.users.find(id=>id==user._id) ? 'Leave community' : 'join community'}
+                        </Button>
+                        {community.premium && (!user.premiumComs.includes(community._id) ? <Button variant = 'contained'  onClick = {handleSubscribe} size="small"> Subscribe </Button>:
+                        <Button variant = 'contained'  size="small" disabled> Subscribed </Button>)
+                        }
+                    </Box>
+                    : 
                     <Box>
                         <Button variant='contained' sx={{marginRight: '10px'}} onClick={()=>{navigate('/create/community', {state:{community: community}})}}>edit community</Button>
                         <Button variant='contained' onClick={handleDel}>delete community</Button>
@@ -128,9 +135,9 @@ export default function ShowCommunity(props){
                     create one
                 </Button></Typography>)
                 :
-                (community.users.includes(user._id) ? 
+                (community.users.includes(user._id) || user.role == 'admin' ? 
                 (posts.length ? <ShowPosts posts={posts}/> : 
-                <Typography marginTop='30px' textAlign='center' variant="h6">No Posts in this Community</Typography>) : (user._id == community.createdBy || user.role == 'admin') ? <ShowPosts posts={posts}/> : 
+                <Typography marginTop='30px' textAlign='center' variant="h6">No Posts in this Community</Typography>) : 
                 <Typography marginTop='30px' textAlign='center' variant="h6">This is premium community you need to subscribe to access the content</Typography>)
                 
             } 

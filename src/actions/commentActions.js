@@ -32,7 +32,6 @@ export const getComments = () => {
     return async(dispatch)=>{
         try{
             const response = await axios.get('api/comments')
-            console.log(response.data)
             dispatch(getCommDispatch({data:[...response.data]}))
         }catch(e){
             if(e.code=='ERR_NETWORK'){

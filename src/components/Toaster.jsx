@@ -3,7 +3,6 @@ import { Alert, Box, Snackbar } from "@mui/material"
 
 export default function Toaster(props){
     const {success, successMsg, error, errorMsg} = props
-    console.log(error, success)
     return (
         <Box>
             <Snackbar open={success} autoHideDuration={6000} >
