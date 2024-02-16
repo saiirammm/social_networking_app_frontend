@@ -62,18 +62,11 @@ export default function Test(props){
                 </ListItemButton> }
                 {user.role=='admin' && 
                 <>
-                <ListItemButton >
+                <ListItemButton onClick={()=>{navigate('/show/reportedPosts')}}>
                 <Tooltip title="reported posts" placement="bottom">
                 <ListItemIcon>
                     <FlagIcon />
                 </ListItemIcon>
-                </Tooltip>
-                </ListItemButton>
-                <ListItemButton >
-                <Tooltip title="reported communities" placement="bottom">
-                    <ListItemIcon>
-                        <FlagIcon />
-                    </ListItemIcon>
                 </Tooltip>
                 </ListItemButton>
                 </>}

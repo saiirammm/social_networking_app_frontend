@@ -49,6 +49,9 @@ export default function ShowPosts(props){
     const comments = useSelector((state)=>{
         return state.comments.data
     })
+    const authHandlers = useSelector((state)=>{
+        return state.auth
+    })
     const [openModal, setOpenModal] = useState(false)
 
     useEffect(()=>{
@@ -92,6 +95,13 @@ export default function ShowPosts(props){
 
         }
     }
+    const handleLike = (id) => {
+        if(localStorage.getItem('token')){
+            dispatch(hitLike(id))
+        }else{
+            authHandlers.handleOpenLoginModal()
+        }
+    }
 
     return (
     <Box sx={{flex:{xs: 40, md: 4}}} p={2} >
@@ -101,7 +111,7 @@ export default function ShowPosts(props){
                         <CardHeader
                         sx={{height: 'auto', padding: '10px', bgcolor: ''}}
                             avatar={
-                            <Avatar sx={{ bgcolor: blue[500] , height:'30px', width: '30px',fontSize: '15px'}} aria-label="profile">
+                            <Avatar sx={{ bgcolor: blue[500] , height:'30px', width: '30px',fontSize: '15px'}} aria-label="profile" onClick={()=>{navigate('/show/community', {state: {id: community._id}})}}>
                                 {community.name[0].toUpperCase()+community.name[1].toUpperCase()}
                             </Avatar>
                             }
@@ -173,7 +183,7 @@ export default function ShowPosts(props){
                             </Typography>
                         </CardContent>
                         <CardActions disableSpacing>
-                            <IconButton aria-label="like" onClick={()=>{dispatch(hitLike(post._id))}}>
+                            <IconButton aria-label="like" onClick={()=>{handleLike(post._id)}}>
                             {likes.find(like=>{
                                 return like.targetId==post._id && like.userId==user._id}) ? <Favorite sx={{color: 'red'}}/> : <FavoriteBorder />}
                             <Typography>{likes.filter(like=>like.targetId==post._id).length}</Typography>

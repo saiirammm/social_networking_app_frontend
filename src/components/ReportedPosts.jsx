@@ -48,8 +48,8 @@ export default function ReportedPosts(props){
             <Toaster success={open} successMsg={message}/>
             <Toaster error={error} errorMsg={errorMsg}/>
         </Box> : 
-        <Box height='500px' display="flex" flexDirection="column" alignItems="center" justifyContent="center">
-            <Typography variant="h6">No Reported Posts</Typography>
+        <Box sx={{flex:{xs: 40, md: 4}, textAlign: 'center'}} p={2} >
+            <Typography variant="h6" marginTop='50%'>No Reported Posts</Typography>
         </Box>
         ) : 
         <Box height='600px' flex={4} p={4} display="flex" flexDirection="column" alignItems="center" justifyContent="center">

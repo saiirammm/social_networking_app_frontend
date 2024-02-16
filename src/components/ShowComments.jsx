@@ -62,11 +62,9 @@ export default function ShowComments(props) {
     <div>
       {(comments.length && commentUsers.length) ? (
         comments.map((comment) => {
-          console.log(comment)
           const comUser = commentUsers.find(ele=>{
             return ele._id==comment.user
           })
-          console.log(comUser)
           return (
             <List sx={{ flex: { xs: 40, md: 4 } }} p={2} key={comment._id}>
             {commentEdits[comment._id] ? <Comments data={comment.content} commentId={comment._id} handleEdit={() => handleEdit(comment._id)}/> : 
@@ -99,10 +97,10 @@ export default function ShowComments(props) {
           <Menu elevation={2} anchorEl={anchorElMap[comment._id]} open={Boolean(anchorElMap[comment._id])} onClose={() => handleCloseMenu(comment._id)}>
           {
             user._id==comment.user ? 
-            <>
+            <Box>
             <MenuItem onClick={() =>{handleEdit(comment._id)}}>edit</MenuItem>
             <MenuItem onClick={()=>{handleDelete(comment._id)}}>delete</MenuItem>
-            </> 
+            </Box> 
            : 
             user._id==moderator ? 
               <MenuItem onClick={()=>{handleDelete(comment._id)}}>delete</MenuItem> : 

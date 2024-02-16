@@ -19,6 +19,9 @@ export default function ShowCommunity(props){
              setId(location.state.id)
          } 
     }, [location.state])
+    const authHandlers = useSelector((state)=>{
+        return state.auth
+    })
     const posts = useSelector((state)=>{
             return state.posts.data.filter(post=> id==post.community)
     })
@@ -54,18 +57,22 @@ export default function ShowCommunity(props){
     };
 
     const handleConfirm = async () => {
-        try {
-            const response = await axios.post(`api/community/join/${community._id}`);
-            const updatedCom = { ...community, users: response.data.users };
-            dispatch(joinLeft(updatedCom));
-        }catch (e) {
-            if(e.code=='ERR_NETWORK'){
-                alert('network error')
-            }else{
-                alert(e.response.data.errors)
-            };
-        }finally{
-            setOpenDialog(false);
+        if(localStorage.getItem('token')){
+            try {
+                const response = await axios.post(`api/community/join/${community._id}`);
+                const updatedCom = { ...community, users: response.data.users };
+                dispatch(joinLeft(updatedCom));
+            }catch (e) {
+                if(e.code=='ERR_NETWORK'){
+                    alert('network error')
+                }else{
+                    alert(e.response.data.errors)
+                };
+            }finally{
+                setOpenDialog(false);
+            }
+        }else{
+            authHandlers.handleOpenLoginModal()
         }
     };
 
@@ -75,21 +82,25 @@ export default function ShowCommunity(props){
     }; 
 
     const handleSubscribe = async()=> {
-        try {
-            const response = await axios.post('api/payment/pay' , {
-                communityId : community._id,
-                amount : community.membershipFee
-            }) 
-            console.log(response)
-            const data = response.data
-            window.location = data.url
-        } catch (e) {
-            console.log(e)
+        if(localStorage.getItem('token')){
+            try {
+                const response = await axios.post('api/payment/pay' , {
+                    communityId : community._id,
+                    amount : community.membershipFee
+                }) 
+                console.log(response)
+                const data = response.data
+                window.location = data.url
+            } catch (e) {
+                console.log(e)
+            }
+        }else{
+            authHandlers.handleOpenLoginModal()
         }
     }
 
     return (
-        community && user ? 
+        community  ? 
         <Box sx={{flex:{xs: 40, md: 4}}} p={2}>
             <Box bgcolor='skyblue' 
             padding='10px'
@@ -97,12 +108,12 @@ export default function ShowCommunity(props){
                 <h1>{community.name}{community.premium && <WorkspacePremiumIcon sx={{color: 'darkblue'}}/>}</h1>
                 <h3>{community.description}</h3>
                 {
-                    !(community.createdBy==user._id) ?
+                    !(community.createdBy==user?._id) ?
                     <Box>
-                        <Button onClick={community.users && community.users.find(id=>id==user._id)?handleJoin:handleConfirm} variant="contained" size="small" sx={{marginRight: '10px'}}>
-                            {community.users && community.users.find(id=>id==user._id) ? 'Leave community' : 'join community'}
+                        <Button onClick={community.users && community.users.find(id=>id==user?._id)?handleJoin:handleConfirm} variant="contained" size="small" sx={{marginRight: '10px'}}>
+                            {community.users && community.users.find(id=>id==user?._id) ? 'Leave community' : 'join community'}
                         </Button>
-                        {community.premium && (!user.premiumComs.includes(community._id) ? <Button variant = 'contained'  onClick = {handleSubscribe} size="small"> Subscribe </Button>:
+                        {community.premium && (!user.premiumComs?.includes(community._id) ? <Button variant = 'contained'  onClick = {handleSubscribe} size="small"> Subscribe </Button>:
                         <Button variant = 'contained'  size="small" disabled> Subscribed </Button>)
                         }
                     </Box>
@@ -129,7 +140,8 @@ export default function ShowCommunity(props){
                 </Dialog>
             </Box>
             { 
-                user._id==community.createdBy ? 
+                community.premium ? 
+                (user._id==community.createdBy ? 
                 (posts.length ? <ShowPosts posts={posts}/> : 
                 <Typography marginTop='30px' textAlign='center' variant="h6">no posts yet<Button onClick={()=>{navigate('/create/post')}}>
                     create one
@@ -138,7 +150,16 @@ export default function ShowCommunity(props){
                 (community.users.includes(user._id) || user.role == 'admin' ? 
                 (posts.length ? <ShowPosts posts={posts}/> : 
                 <Typography marginTop='30px' textAlign='center' variant="h6">No Posts in this Community</Typography>) : 
-                <Typography marginTop='30px' textAlign='center' variant="h6">This is premium community you need to subscribe to access the content</Typography>)
+                <Typography marginTop='30px' textAlign='center' variant="h6">This is premium community you need to subscribe to access the content</Typography>)) :
+
+                user._id==community.createdBy ? 
+                (posts.length ? <ShowPosts posts={posts}/> : 
+                <Typography marginTop='30px' textAlign='center' variant="h6">no posts yet<Button onClick={()=>{navigate('/create/post')}}>
+                    create one
+                </Button></Typography>)
+                :
+                posts.length ? <ShowPosts posts={posts}/> : 
+                <Typography marginTop='30px' textAlign='center' variant="h6">No Posts in this Community</Typography>
                 
             } 
                 

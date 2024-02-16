@@ -9,7 +9,6 @@ import { createCommDispatch, editCommentDispatch } from '../actions/commentActio
 import Toaster from './Toaster'
 export default function Comments(props){
     const {postId, data, commentId, handleEdit} = props
-    console.log(data, commentId)
     const dispatch = useDispatch()
     const [message, setMessage] = useState('')
     const [success, setSuccess] = useState(false)

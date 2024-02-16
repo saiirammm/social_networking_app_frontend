@@ -19,6 +19,9 @@ export default function CreateCommunity(props){
     const categoryData = useSelector((state)=>{
         return state.categories.data
     })
+    const authHandlers = useSelector((state)=>{
+        return state.auth
+    })
     const navigate = useNavigate()
     const dispatch = useDispatch()
     const initialValues = {

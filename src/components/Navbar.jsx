@@ -77,7 +77,7 @@ export default function NavBar(props){
         <AppBar position="sticky">
             <StyledToolbar>
                 <Stack direction='row' >
-                <StayCurrentPortraitIcon sx={{padding: '2px 3px 0px 0px', marginLeft:'0', marginRight: '0'}}/>
+                <StayCurrentPortraitIcon sx={{padding: '2px 3px 0px 0px', marginLeft:'0', marginRight: '0'}} onClick={()=>{navigate('/')}}/>
                 <Typography variant="h6" sx={{display:{xs: 'none', md: 'block'}}}>
                     SNAPP
                 </Typography>

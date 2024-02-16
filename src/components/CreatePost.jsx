@@ -65,6 +65,7 @@ export default function CreatePost() {
       formData.append('title', values.title)
       formData.append('body', values.body)
       formData.append('community', community._id)
+      formData.append('premium', community.premium)
       files.forEach((file, index) => formData.append(`content`, file))
       setL(true)
       try{

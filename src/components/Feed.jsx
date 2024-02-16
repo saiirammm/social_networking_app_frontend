@@ -19,7 +19,7 @@ export default function Feed(props){
     return (
         posts ? (!Object.keys(posts.serverErrors).length ?
         <Box sx={{flex:{xs: 40, md: 4}}} p={2} >
-            <ShowPosts posts={posts.data} />
+            <ShowPosts posts={posts.data.filter(post=>post.premium==false)} />
         </Box> : 
         <Toaster error={snackbarOpen} errorMsg={posts.serverErrors.errors}/>) : 
         <Box height='600px' flex={4} p={4} display="flex" flexDirection="column" alignItems="center" justifyContent="center">
